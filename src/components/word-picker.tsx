@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/select"
 import Viewer from "./word-viewer"
 import { useState } from "react"
+import './word-picker.css'
 
 const textFormSchema = z.object({
     word: z.string().min(1).max(4),
@@ -92,11 +93,11 @@ export default function Picker() {
     }
 
     return (
-        <div>
-            <Card>
-                <CardContent>
+        <div className="picker-comp">
+            <Card className="picker-card">
+                <CardContent className="form-comp">
                     <Label>Type a word in Hanzi to check it's definition:</Label>
-                    <Form {...textForm}>
+                    <Form {...textForm} >
                         <form onSubmit={textForm.handleSubmit(onTextSubmit)} className="space-y-8">
                             <FormField
                                 control={textForm.control}
