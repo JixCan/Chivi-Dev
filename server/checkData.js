@@ -11,7 +11,7 @@ async function main() {
 
   // Используем метод all для получения данных
   const result = await db.all(
-    "SELECT HSK_level, COUNT(*) as count FROM words GROUP BY HSK_level ORDER BY HSK_level ASC;"
+    "SELECT * FROM words WHERE HSK_level = 1 ORDER BY RANDOM() LIMIT 1;"
     // "SELECT * FROM words WHERE HSK_level = 1;"
   );
 

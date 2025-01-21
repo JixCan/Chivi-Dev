@@ -24,8 +24,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "./ui/label"
 
-
-
+import axios from 'axios';
 
 import {
     Select,
@@ -34,6 +33,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import Viewer from "./word-viewer"
+import { useState } from "react"
 
 const textFormSchema = z.object({
     word: z.string().min(1).max(4),
@@ -47,7 +48,8 @@ const listFormSchema = z.object({
 })
 
 export default function Picker() {
-    // 1. Define your form.
+    const [wordData, setWordData] = useState(null);
+
     const textForm = useForm<z.infer<typeof textFormSchema>>({
         resolver: zodResolver(textFormSchema),
         defaultValues: {
@@ -59,13 +61,34 @@ export default function Picker() {
         resolver: zodResolver(listFormSchema),
     })
 
-    // 2. Define a submit handler.
-    function onTextSubmit(data: z.infer<typeof textFormSchema>) {
-        console.log(JSON.stringify(data, null, 2))
+    async function onTextSubmit(data: z.infer<typeof textFormSchema>) {
+        try {
+
+            // Отправляем GET-запрос на сервер
+            const response = await axios.get('http://localhost:3000/api/word', {
+                params: { text: data.word }, // Передаем текст как query-параметр
+            });
+
+            // Обновляем состояние с новыми данными
+            setWordData(response.data);
+        } catch (error) {
+            console.error('Ошибка при отправке запроса:', error);
+        }
     }
 
-    function onListSubmit(data: z.infer<typeof listFormSchema>) {
-        console.log(JSON.stringify(data, null, 2))
+    async function onListSubmit(data: z.infer<typeof listFormSchema>) {
+        try {
+
+            // Отправляем GET-запрос на сервер
+            const response = await axios.get('http://localhost:3000/api/random', {
+                params: { number: data.list }, // Передаем текст как query-параметр
+            });
+
+            // Обновляем состояние с новыми данными
+            setWordData(response.data);
+        } catch (error) {
+            console.error('Ошибка при отправке запроса:', error);
+        }
     }
 
     return (
@@ -104,7 +127,7 @@ export default function Picker() {
                                 name="list"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Email</FormLabel>
+                                        <FormLabel>HSK Lists</FormLabel>
                                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                                             <FormControl>
                                                 <SelectTrigger>
@@ -118,7 +141,7 @@ export default function Picker() {
                                                 <SelectItem value="4">HSK 4</SelectItem>
                                                 <SelectItem value="5">HSK 5</SelectItem>
                                                 <SelectItem value="6">HSK 6</SelectItem>
-                                                <SelectItem value="7">HSK 7</SelectItem>
+                                                <SelectItem value="7">HSK 7-9</SelectItem>
                                             </SelectContent>
                                         </Select>
                                         <FormMessage />
@@ -131,7 +154,7 @@ export default function Picker() {
 
                 </CardContent>
                 <CardFooter>
-                    <p>Card Footer</p>
+                    <Viewer data={wordData} />
                 </CardFooter>
             </Card>
 
